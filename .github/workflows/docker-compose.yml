@@ -1,0 +1,57 @@
+name: CI - Validar contenedores
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  docker-compose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codigo
+        uses: actions/checkout@v4
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Crear archivo .env
+        run: |
+          cat > .env <<'EOF'
+          MYSQL_ROOT_PASSWORD=innovatech2025
+          MYSQL_DATABASE=despachos
+          EOF
+
+      - name: Build y levantar contenedores
+        run: docker compose up -d --build
+
+      - name: Ver estado
+        run: docker compose ps
+
+      - name: Esperar backend despachos
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:8081/swagger-ui.html >/dev/null; then
+              echo "Backend despachos listo"
+              exit 0
+            fi
+            echo "Esperando..."
+            sleep 5
+          done
+          docker compose logs back-despachos
+          exit 1
+
+      - name: Verificar frontend
+        run: curl -fsS http://localhost:80 >/dev/null
+
+      - name: Logs si falla
+        if: failure()
+        run: docker compose logs
+
+      - name: Apagar contenedores
+        if: always()
+        run: docker compose down -v

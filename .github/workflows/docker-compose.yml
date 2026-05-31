@@ -19,6 +19,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build y Push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front_despacho
+          push: true
+          tags: moonnnluv/innovatech-frontend:latest
+
+      - name: Build y Push back-despachos
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back-Despachos_SpringBoot/Springboot-API-REST-DESPACHO
+          push: true
+          tags: moonnnluv/innovatech-back-despachos:latest
+
+      - name: Build y Push back-ventas
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back-Ventas_SpringBoot/Springboot-API-REST
+          push: true
+          tags: moonnnluv/innovatech-back-ventas:latest
+
       - name: Crear archivo .env
         run: |
           cat > .env <<'EOF'

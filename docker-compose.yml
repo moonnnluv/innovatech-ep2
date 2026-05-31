@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   db:
@@ -27,6 +25,12 @@ services:
       dockerfile: Dockerfile
     container_name: innovatech-back-despachos
     restart: unless-stopped
+    environment:
+      DB_ENDPOINT: db
+      DB_PORT: 3306
+      DB_NAME: despachos
+      DB_USERNAME: root
+      DB_PASSWORD: innovatech2025
     ports:
       - "8081:8081"
     depends_on:
@@ -42,6 +46,12 @@ services:
       dockerfile: Dockerfile
     container_name: innovatech-back-ventas
     restart: unless-stopped
+    environment:
+      DB_ENDPOINT: db
+      DB_PORT: 3306
+      DB_NAME: ventas
+      DB_USERNAME: root
+      DB_PASSWORD: innovatech2025
     ports:
       - "8082:8080"
     depends_on:
